@@ -7,6 +7,7 @@ import type { Route } from '../../router'
 const TRAVEL_TIME = 0.85 // smooth-damp time constant: eases in AND out, so journeys feel filmed, not snapped
 const DRIFT_RATE = 1.8 // pointer follow, exponential: unhurried, like a viewer stepping along a gallery wall
 const PREVIEW_LEAN = 0.06 // how far hovering a destination leans the overview toward it
+const TOUCH_REACH = 0.35 // a finger drag moves the view at most this fraction of the mouse's reach
 // Dev-only: `?snap` jumps straight to each pose, for checking framing in throttled/headless tabs.
 const SNAP = import.meta.env.DEV && location.search.includes('snap')
 
@@ -28,20 +29,44 @@ export function MedievalCamera({ route }: { route: Route }) {
   const drift = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
+    // Touch: only a drag on the painting itself moves the view, by how far the finger travelled
+    // (not where it landed), and only a third as far as a mouse can. Scrolling a folio or tapping
+    // the nav never nudges the camera.
+    const drag = { active: false, x: 0, y: 0 }
+    const down = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') return
+      drag.active = !(e.target as Element).closest?.('section, nav, a, button, header')
+      drag.x = e.clientX
+      drag.y = e.clientY
+    }
     const move = (e: PointerEvent) => {
-      pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1
-      pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
+      if (e.pointerType === 'mouse') {
+        pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1
+        pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1)
+        return
+      }
+      if (!drag.active) return
+      const span = Math.min(window.innerWidth, window.innerHeight)
+      const clamp = (v: number) => Math.max(-TOUCH_REACH, Math.min(TOUCH_REACH, v))
+      pointer.current.x = clamp(((drag.x - e.clientX) / span) * TOUCH_REACH * 2)
+      pointer.current.y = clamp(((e.clientY - drag.y) / span) * TOUCH_REACH * 2)
     }
     const leave = () => {
       pointer.current.x = pointer.current.y = 0
     }
-    // on touch screens a finger drags the view; when it lifts, the painting drifts back to rest
-    const lift = (e: PointerEvent) => e.pointerType !== 'mouse' && leave()
+    // when the finger lifts, the painting drifts back to rest
+    const lift = (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') return
+      drag.active = false
+      leave()
+    }
+    window.addEventListener('pointerdown', down)
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', lift)
     window.addEventListener('pointercancel', lift)
     document.documentElement.addEventListener('mouseleave', leave)
     return () => {
+      window.removeEventListener('pointerdown', down)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', lift)
       window.removeEventListener('pointercancel', lift)
