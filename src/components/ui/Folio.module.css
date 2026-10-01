@@ -1,0 +1,172 @@
+.folio {
+  position: fixed;
+  z-index: 15;
+  top: 104px;
+  bottom: 30px;
+  width: min(600px, 44vw);
+  pointer-events: auto;
+  animation: open 460ms var(--ease-drawer) 120ms both;
+}
+
+.folio[data-side='left'] {
+  left: 30px;
+  --from: -28px;
+}
+
+.folio[data-side='right'] {
+  right: 30px;
+  --from: 28px;
+}
+
+@keyframes open {
+  from {
+    opacity: 0;
+    transform: translateX(var(--from));
+  }
+}
+
+/* A painted leaf: parchment texture inside an illuminated border, darkened, worn edges. */
+.sheet {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--parchment-tex) center / 900px;
+  border: 16px solid transparent;
+  border-image: var(--illuminated) 74 / 16px round;
+  box-shadow:
+    inset 0 0 60px rgba(120, 82, 40, 0.3),
+    0 24px 60px rgba(20, 28, 50, 0.4),
+    0 2px 6px rgba(20, 28, 50, 0.25);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 1.6rem;
+  padding: 0.9rem 0 0.55rem 0.4rem;
+  border-bottom: 1px solid rgba(166, 61, 39, 0.45);
+  box-shadow: 0 3px 0 -2px rgba(166, 61, 39, 0.3);
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: 0.08em;
+  color: var(--rubric);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0.2rem 0.6rem 0.2rem 0.3rem;
+  margin-right: -0.5rem;
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--brown-ink);
+  transition:
+    color 200ms ease,
+    background-color 200ms ease,
+    transform 140ms var(--ease-out);
+}
+
+.close img {
+  transition: transform 400ms var(--ease-out);
+}
+
+.close:active {
+  transform: scale(0.94);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .close:hover {
+    color: var(--rubric);
+    background-color: rgba(201, 162, 76, 0.18);
+  }
+  .close:hover img {
+    transform: rotate(-30deg);
+  }
+}
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.3rem 2.4rem 2.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(166, 61, 39, 0.55) transparent;
+}
+
+.content {
+  animation: ink 380ms var(--ease-out) both;
+}
+
+@keyframes ink {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 900px) {
+  .folio {
+    width: min(560px, 52vw);
+  }
+}
+
+/* Phones: the leaf takes the page above the tab bar; the painting peeks around it. */
+@media (max-width: 760px) {
+  .folio,
+  .folio[data-side] {
+    top: 14px;
+    left: 12px;
+    right: 12px;
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    width: auto;
+    --from: 0px;
+    animation-name: openUp;
+  }
+  @keyframes openUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+  .sheet {
+    border-width: 11px;
+    border-image-width: 11px;
+  }
+  .head {
+    margin: 0 1rem;
+  }
+  .scroll {
+    padding: 1rem 1.3rem 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .folio,
+  .folio[data-side],
+  .content {
+    animation-name: fade;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+}

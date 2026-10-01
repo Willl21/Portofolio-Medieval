@@ -1,16 +1,30 @@
 :root {
-  --parchment: #efe3c8;
-  --cream: #f6eedb;
-  --ink: #2b1d14;
-  --brown-ink: #5a3e2b;
-  --gold: #b08d3c;
-  --red: #8c3b32;
-  --burgundy: #5c1f24;
-  --green: #3f5236;
-  --blue: #6f84a0;
-  --halo: rgba(246, 238, 219, 0.85);
+  /* pigments, matched to the painting (scripts/art/paint.mjs) */
+  --parchment: #ecdcb8;
+  --cream: #f3ead6;
+  --ink: #3b2a1e;
+  --brown-ink: #5a4330;
+  --azure: #3c5b8e;
+  --azure-deep: #2b4677;
+  --vermilion: #b5472f;
+  --red: #963a2b;
+  --rubric: #a63d27;
+  --gold: #c9a24c;
+  --gold-bright: #e6c977;
+  --gold-dark: #8e6b26;
+  --green: #55703f;
+  --halo: rgba(243, 234, 214, 0.85);
+
+  --font-display: 'Grenze Gotisch', 'EB Garamond', Georgia, serif;
+  --font-label: 'Alegreya SC', 'EB Garamond', Georgia, serif;
+  --font-body: 'EB Garamond', Georgia, serif;
+
+  /* painted 9-slice border (tile is 528px, band edge at 74px) */
+  --illuminated: url('./assets/medieval/ornaments/borders/illuminated.webp');
+  --parchment-tex: url('./assets/medieval/textures/parchment.webp');
 
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
   color-scheme: light;
 }
@@ -24,40 +38,111 @@
 html,
 body {
   margin: 0;
-  min-height: 100%;
-  background: var(--parchment);
+  height: 100%;
+  overflow: hidden; /* the world is fixed; folios scroll on their own */
+  background: var(--azure-deep);
   color: var(--ink);
-  font-family: 'EB Garamond', Georgia, serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Fixed backdrop: WebGL canvas or the static <img> fallback. */
+::selection {
+  background: rgba(201, 162, 76, 0.4);
+}
+
+/* Fixed backdrop: WebGL canvas, with the static painting underneath. */
 .scene {
   position: fixed !important;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
 }
 
-.scene-static-layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Aged-painting edge darkening + paper grain over the whole scene. */
+/* Aged edges of the painted page + a whisper of grain (the art carries its own texture). */
 .vignette {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at center, transparent 55%, rgba(60, 35, 15, 0.35) 100%),
+    radial-gradient(ellipse at center, transparent 58%, rgba(59, 42, 30, 0.32) 100%),
     url('./assets/medieval/textures/paper.webp') 0 0 / 256px repeat;
 }
 
-#root > main {
-  position: relative;
-  z-index: 2;
+/* The whole screen is a miniature on a manuscript page: an illuminated border frames it. */
+.page-frame {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  border: 13px solid transparent;
+  border-image: var(--illuminated) 74 / 13px round;
+}
+
+/* Overview caption: a strip of parchment at the foot of the painting. */
+.realm-hint {
+  position: fixed;
+  z-index: 10;
+  left: 50%;
+  bottom: 30px;
+  margin: 0;
+  padding: 0.45rem 1.3rem 0.5rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-style: italic;
+  font-size: 1.08rem;
+  color: var(--brown-ink);
+  background: var(--parchment-tex) center / 600px;
+  border: 8px solid transparent;
+  border-image: var(--illuminated) 74 / 8px round;
+  box-shadow: 0 6px 16px rgba(43, 29, 20, 0.25);
+  pointer-events: none;
+  animation: hint 600ms var(--ease-out) 700ms both;
+}
+
+/* with the 3D painting, the foot of the frame belongs to the signpost: hang the hint under the banner */
+.realm-hint[data-place='top'] {
+  top: 108px;
+  bottom: auto;
+}
+
+@keyframes hint {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+.realm-hint .narrow {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .realm-hint .wide {
+    display: none;
+  }
+  .realm-hint .narrow {
+    display: inline;
+  }
+  .realm-hint[data-place] {
+    top: auto;
+  }
+  .page-frame {
+    border-width: 8px;
+    border-image-width: 8px;
+  }
+  .realm-hint {
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    white-space: normal;
+    width: max-content;
+    max-width: calc(100vw - 40px);
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .realm-hint {
+    animation-name: none;
+  }
 }

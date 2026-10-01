@@ -1,6 +1,16 @@
-import { Suspense, lazy, useState } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import Home from './pages/Home'
+import About from './pages/About'
+import Projects from './pages/Projects'
+import Skills from './pages/Skills'
+import Experience from './pages/Experience'
+import Contact from './pages/Contact'
 import { StaticScene } from './components/medieval/StaticScene'
+import { RealmNav } from './components/navigation/RealmNav'
+import { Folio } from './components/ui/Folio'
+import { PLACES, type PlaceId } from './components/medieval/places'
+import { PROJECTS } from './content'
+import { useRoute } from './router'
 
 const MedievalScene = lazy(() => import('./components/medieval/MedievalScene'))
 
@@ -16,23 +26,60 @@ const hasWebGL = (() => {
 // ponytail: read once at load; make reactive if switching OS settings live ever matters.
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches
-// Parallax only where it pays off: desktop mouse, motion allowed. Everyone else gets the static stack.
+// The living 2.5D painting where it pays off: desktop mouse, motion allowed. Everyone else gets the static painting.
 const animated = hasWebGL && finePointer && !reduceMotion
 
+const PAGES: Record<PlaceId, (props: { detail?: string }) => React.ReactNode> = {
+  about: About,
+  projects: ({ detail }) => <Projects slug={detail} />,
+  skills: Skills,
+  experience: Experience,
+  contact: Contact,
+}
+
 export default function App() {
-  const [entered, setEntered] = useState(false)
+  const route = useRoute()
+  const place = route.view === 'place' ? route.place : null
+  const detail = route.view === 'place' ? route.detail : undefined
+
+  useEffect(() => {
+    const project = PROJECTS.find((p) => p.slug === detail)
+    const section = place && (project?.name ?? `${PLACES[place].label} — ${PLACES[place].name}`)
+    document.title = section ? `${section} · The Chronicles of Wildan` : 'The Chronicles of Wildan'
+  }, [place, detail])
+
+  const Page = place && PAGES[place]
 
   return (
     <>
-      {/* Always underneath: shows instantly, and the canvas's opaque sky covers it once textures load. */}
+      {/* Always underneath: paints instantly, and the canvas's opaque sky covers it once textures load. */}
       <StaticScene />
       {animated && (
         <Suspense fallback={null}>
-          <MedievalScene entered={entered} />
+          <MedievalScene route={route} />
         </Suspense>
       )}
       <div className="vignette" aria-hidden />
-      <Home entered={entered} onEnter={() => setEntered(true)} onReturn={() => setEntered(false)} />
+      <div className="page-frame" aria-hidden />
+
+      <Home hidden={route.view !== 'title'} />
+
+      {route.view !== 'title' && <RealmNav current={place} />}
+
+      {route.view === 'realm' && (
+        <p className="realm-hint" data-place={animated ? 'top' : 'bottom'} role="status">
+          <span className="wide">{animated ? 'Follow a signpost, or choose from the banner above.' : 'Choose a destination from the banner above.'}</span>
+          <span className="narrow">Choose a destination below.</span>
+        </p>
+      )}
+
+      {place && Page && (
+        <main>
+          <Folio key={place} place={place} view={`${place}/${detail ?? ''}`}>
+            <Page detail={detail} />
+          </Folio>
+        </main>
+      )}
     </>
   )
 }

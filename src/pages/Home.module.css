@@ -1,51 +1,85 @@
-.landing {
-  position: relative;
-  min-height: 100dvh;
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  padding: max(10vh, 48px) 16px 0;
-  text-align: center;
-}
-
 .hero {
+  position: fixed;
+  z-index: 10;
+  top: max(5vh, 34px);
+  left: 50%;
+  width: min(92vw, 820px);
+  transform: translateX(-50%);
   display: grid;
   justify-items: center;
-  gap: 0.75rem;
+  gap: 0.35rem;
+  text-align: center;
+  pointer-events: none;
   transition:
     opacity 300ms var(--ease-out),
     transform 300ms var(--ease-out);
 }
 
+.hero > a {
+  pointer-events: auto;
+}
+
 .hero[data-hidden='true'] {
   opacity: 0;
-  transform: translateY(-12px);
+  transform: translate(-50%, -14px);
 }
 
 /* First-visit entrance, staggered. */
 .hero > * {
   animation: rise 900ms var(--ease-out) both;
 }
-.hero > :nth-child(2) { animation-delay: 80ms; }
+.hero > :nth-child(2) { animation-delay: 70ms; }
 .hero > :nth-child(3) { animation-delay: 160ms; }
-.hero > :nth-child(4) { animation-delay: 240ms; }
+.hero > :nth-child(4) { animation-delay: 220ms; }
+.hero > :nth-child(5) { animation-delay: 290ms; }
+.hero > :nth-child(6) { animation-delay: 350ms; }
 
 @keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* text sitting on the painted sky: pale, with a soft dark halo for legibility */
+.kicker,
+.subtitle,
+.skip {
+  color: var(--cream);
+  text-shadow:
+    0 1px 2px rgba(20, 28, 50, 0.7),
+    0 0 18px rgba(20, 28, 50, 0.55);
+}
+
+.kicker {
+  margin: 0 0 0.1rem;
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.22em;
+}
+
+/* the painted banderole */
+.scroll {
+  width: min(96vw, 760px);
+  aspect-ratio: 1600 / 360;
+  display: grid;
+  place-items: center;
+  background: url('../assets/medieval/ornaments/banderole/banderole.webp') center / 100% 100% no-repeat;
+  filter: drop-shadow(0 8px 14px rgba(20, 28, 50, 0.35));
 }
 
 .title {
   margin: 0;
   display: grid;
-  color: var(--ink);
-  text-shadow: 0 0 24px var(--halo);
-  line-height: 1;
+  line-height: 0.9;
+  transform: translateY(-2%);
 }
 
 .titleSmall {
   font-family: 'Cinzel', serif;
   font-weight: 500;
-  font-size: clamp(0.95rem, 2.2vw, 1.4rem);
+  font-size: clamp(0.78rem, 1.7vw, 1.05rem);
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--brown-ink);
@@ -54,98 +88,82 @@
 .titleName {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
   font-weight: 700;
-  font-size: clamp(3rem, 9vw, 6.5rem);
+  font-size: clamp(2.3rem, 6.4vw, 4.2rem);
   letter-spacing: 0.04em;
-  color: var(--burgundy);
-}
-
-.divider {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: var(--gold);
-  font-size: 1.25rem;
-}
-.divider::before,
-.divider::after {
-  content: '';
-  width: clamp(48px, 10vw, 96px);
-  border-top: 1px solid var(--gold);
+  color: #5c1f24;
 }
 
 .subtitle {
-  margin: 0;
+  margin: 0.35rem 0 0;
   font-style: italic;
-  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
-  color: var(--brown-ink);
-  text-shadow: 0 0 16px var(--halo);
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
 }
 
-.enter,
-.back {
-  font-family: 'Cinzel', serif;
+.divider {
+  width: min(300px, 60vw);
+  margin: -0.1rem 0 0;
+  filter: drop-shadow(0 1px 2px rgba(20, 28, 50, 0.6));
+}
+
+.enter {
+  margin-top: 0.6rem;
+  padding: 0.85rem 2.2rem 0.95rem;
+  min-height: 48px;
+  font-family: var(--font-label);
   font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 1.1rem;
+  letter-spacing: 0.14em;
+  text-decoration: none;
   color: var(--cream);
-  background: var(--burgundy);
-  border: 0;
-  cursor: pointer;
-  /* double gold rule, like a manuscript border */
+  background: var(--vermilion);
   box-shadow:
-    inset 0 0 0 1px var(--gold),
-    inset 0 0 0 4px var(--burgundy),
-    inset 0 0 0 5px var(--gold);
+    inset 0 0 0 2px var(--gold),
+    inset 0 0 0 5px var(--vermilion),
+    inset 0 0 0 6px var(--gold-bright),
+    0 8px 20px rgba(20, 28, 50, 0.35);
   transition:
     background-color 200ms ease,
     transform 140ms var(--ease-out);
 }
 
-.enter {
-  margin-top: 1.25rem;
-  padding: 1rem 2.25rem;
-  font-size: 0.95rem;
-  min-height: 48px;
+.skip {
+  padding: 0.35rem 0.6rem;
+  font-style: italic;
+  font-size: 1.05rem;
+  text-decoration-color: rgba(243, 234, 214, 0.5);
+  text-underline-offset: 3px;
+  transition: color 200ms ease;
 }
 
-.back {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  padding: 0.6rem 1.1rem;
-  font-size: 0.75rem;
-  min-height: 44px;
-  animation: rise 300ms var(--ease-out) 400ms both;
-}
-
-.enter:active,
-.back:active {
+.enter:active {
   transform: scale(0.97);
 }
 
 .enter:focus-visible,
-.back:focus-visible {
-  outline: 2px solid var(--gold);
+.skip:focus-visible {
+  outline: 2px solid var(--gold-bright);
   outline-offset: 4px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .enter:hover,
-  .back:hover {
+  .enter:hover {
     background-color: var(--red);
+  }
+  .skip:hover {
+    color: var(--gold-bright);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero > *,
-  .back {
+  .hero > * {
     animation-name: fade;
   }
   .hero[data-hidden='true'] {
-    transform: none;
+    transform: translateX(-50%);
   }
   @keyframes fade {
-    from { opacity: 0; }
+    from {
+      opacity: 0;
+    }
   }
 }

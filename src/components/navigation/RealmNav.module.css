@@ -1,0 +1,180 @@
+/* A strip of parchment in an illuminated border, pinned to the top of the page. */
+.nav {
+  position: fixed;
+  z-index: 20;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.45rem 0.1rem 0.25rem;
+  background: var(--parchment-tex) center / 700px;
+  border: 10px solid transparent;
+  border-image: var(--illuminated) 74 / 10px round;
+  box-shadow: 0 10px 24px rgba(20, 28, 50, 0.3);
+  pointer-events: auto;
+  animation: settle 500ms var(--ease-out) 150ms both;
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+}
+
+.crest {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 46px;
+  margin-right: 0.2rem;
+  border-right: 1px solid rgba(166, 61, 39, 0.35);
+}
+
+.crest img {
+  width: 26px;
+  height: auto;
+  transition: transform 300ms var(--ease-out);
+}
+
+.list {
+  display: flex;
+  gap: 0.05rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  padding: 0.2rem 0.7rem;
+  color: var(--brown-ink);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+/* active / hover: a vermilion rubric rule under the name */
+.item::after {
+  content: '';
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 4px;
+  height: 2px;
+  background: var(--rubric);
+  transform: scaleX(0);
+  transition: transform 250ms var(--ease-out);
+}
+
+.item[aria-current='page'] {
+  color: var(--rubric);
+}
+
+.item[aria-current='page']::after {
+  transform: scaleX(1);
+}
+
+.item:focus-visible,
+.crest:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.text {
+  display: grid;
+  line-height: 1.05;
+}
+
+.name {
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: 0.06em;
+}
+
+.label {
+  font-style: italic;
+  font-size: 0.86rem;
+  color: var(--brown-ink);
+  opacity: 0.9;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    color: var(--rubric);
+  }
+  .item:hover::after {
+    transform: scaleX(0.6);
+  }
+  .crest:hover img {
+    transform: rotate(-6deg) scale(1.06);
+  }
+}
+
+/* Phones: a bottom tab bar, plain labels first (thumb reach, no decoding). */
+@media (max-width: 760px) {
+  .nav {
+    top: auto;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    transform: none;
+    padding: 0 0.1rem calc(env(safe-area-inset-bottom));
+    border-width: 7px;
+    border-image-width: 7px;
+    animation-name: rise;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  .crest {
+    display: none;
+  }
+  .list {
+    flex: 1;
+    justify-content: space-around;
+  }
+  .item {
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.35rem 0.3rem;
+    min-width: 54px;
+  }
+  .item::after {
+    bottom: 0;
+  }
+  .text {
+    text-align: center;
+  }
+  .name {
+    display: none;
+  }
+  .label {
+    font-style: normal;
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    font-weight: 700;
+    opacity: 1;
+    color: inherit;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav {
+    animation-name: fade;
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+}

@@ -95,11 +95,30 @@ export const svg = (w, h, body, { defs = '', scale = 1 } = {}) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(w * scale)}" height="${Math.round(h * scale)}" viewBox="0 0 ${w} ${h}"><defs>${defs}</defs>${body}</svg>`
 
 /** .svg → written as-is; anything else → rasterized to WebP. */
-export async function save(rel, markup) {
+export async function save(rel, markup, { quality = 85 } = {}) {
   const file = resolve(OUT, rel)
   await mkdir(dirname(file), { recursive: true })
   if (rel.endsWith('.svg')) await writeFile(file, markup)
-  else await sharp(Buffer.from(markup)).webp({ quality: 85, alphaQuality: 90, effort: 5 }).toFile(file)
+  else await sharp(Buffer.from(markup)).webp({ quality, alphaQuality: 90, effort: 5 }).toFile(file)
+  console.log('✓', rel)
+  return file
+}
+
+/**
+ * Render with a margin all round, then crop it off: displacement filters sample outside the
+ * canvas, and without the margin every frame edge would come out ragged and transparent.
+ */
+export async function saveFramed(rel, w, h, body, { defs = '', scale = 1, pad = 48, quality = 84 } = {}) {
+  const file = resolve(OUT, rel)
+  await mkdir(dirname(file), { recursive: true })
+  const W = w + pad * 2
+  const H = h + pad * 2
+  const markup = `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(W * scale)}" height="${Math.round(H * scale)}" viewBox="${-pad} ${-pad} ${W} ${H}"><defs>${defs}</defs>${body}</svg>`
+  const p = Math.round(pad * scale)
+  await sharp(Buffer.from(markup))
+    .extract({ left: p, top: p, width: Math.round(w * scale), height: Math.round(h * scale) })
+    .webp({ quality, alphaQuality: 90, effort: 5 })
+    .toFile(file)
   console.log('✓', rel)
   return file
 }

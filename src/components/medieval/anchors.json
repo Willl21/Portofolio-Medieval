@@ -1,0 +1,165 @@
+{
+  "sun": {
+    "layer": "sky",
+    "x": 2050,
+    "y": 250,
+    "size": 190
+  },
+  "places": {
+    "about": {
+      "layer": "castle",
+      "x": 1280,
+      "y": 920
+    },
+    "skills": {
+      "layer": "village",
+      "x": 350,
+      "y": 918
+    },
+    "projects": {
+      "layer": "village",
+      "x": 730,
+      "y": 895
+    },
+    "experience": {
+      "layer": "village",
+      "x": 1815,
+      "y": 892
+    },
+    "contact": {
+      "layer": "village",
+      "x": 2250,
+      "y": 720
+    }
+  },
+  "flags": [
+    {
+      "layer": "castle",
+      "x": 1131,
+      "y": 774,
+      "tex": "red"
+    },
+    {
+      "layer": "castle",
+      "x": 1427,
+      "y": 791,
+      "tex": "blue"
+    },
+    {
+      "layer": "castle",
+      "x": 1278,
+      "y": 656,
+      "tex": "red"
+    },
+    {
+      "layer": "castle",
+      "x": 1024,
+      "y": 821,
+      "tex": "red"
+    },
+    {
+      "layer": "castle",
+      "x": 1536,
+      "y": 821,
+      "tex": "red"
+    },
+    {
+      "layer": "village",
+      "x": 730,
+      "y": 697,
+      "tex": "gold"
+    },
+    {
+      "layer": "village",
+      "x": 1728,
+      "y": 646,
+      "tex": "blue"
+    },
+    {
+      "layer": "village",
+      "x": 2288,
+      "y": 550,
+      "tex": "red"
+    }
+  ],
+  "smoke": [
+    {
+      "layer": "castle",
+      "x": 1359,
+      "y": 854
+    },
+    {
+      "layer": "village",
+      "x": 490,
+      "y": 849,
+      "small": true
+    },
+    {
+      "layer": "village",
+      "x": 946,
+      "y": 864,
+      "small": true
+    },
+    {
+      "layer": "village",
+      "x": 275,
+      "y": 790
+    },
+    {
+      "layer": "village",
+      "x": 588,
+      "y": 883,
+      "small": true
+    },
+    {
+      "layer": "village",
+      "x": 1958,
+      "y": 860,
+      "small": true
+    },
+    {
+      "layer": "village",
+      "x": 2026,
+      "y": 886,
+      "small": true
+    }
+  ],
+  "fire": [
+    {
+      "layer": "castle",
+      "x": 1240,
+      "y": 1014,
+      "kind": "torch"
+    },
+    {
+      "layer": "castle",
+      "x": 1320,
+      "y": 1014,
+      "kind": "torch"
+    },
+    {
+      "layer": "village",
+      "x": 342,
+      "y": 954,
+      "kind": "glow"
+    },
+    {
+      "layer": "village",
+      "x": 2250,
+      "y": 588,
+      "kind": "flame"
+    }
+  ],
+  "knight": {
+    "layer": "village",
+    "x": 507,
+    "y": 968,
+    "height": 74
+  },
+  "raven": {
+    "layer": "village",
+    "x": 2216,
+    "y": 590,
+    "height": 34
+  }
+}

@@ -1,30 +1,29 @@
+import divider from '../assets/medieval/ornaments/dividers/divider.webp'
+import { href } from '../router'
 import styles from './Home.module.css'
 
-type Props = { entered: boolean; onEnter: () => void; onReturn: () => void }
-
-export default function Home({ entered, onEnter, onReturn }: Props) {
+/**
+ * Title page of the chronicle. The title is lettered on a banderole unfurled in the sky,
+ * the way medieval painters put words into a picture. Stays mounted so it can fade out.
+ */
+export default function Home({ hidden }: { hidden: boolean }) {
   return (
-    <main className={styles.landing}>
-      <header className={styles.hero} data-hidden={entered} inert={entered}>
+    <header className={styles.hero} data-hidden={hidden} inert={hidden}>
+      <p className={styles.kicker}>A portfolio in five folios</p>
+      <div className={styles.scroll}>
         <h1 className={styles.title}>
           <span className={styles.titleSmall}>The Chronicles of</span>
           <span className={styles.titleName}>Wildan</span>
         </h1>
-        <p className={styles.divider} aria-hidden>
-          ❦
-        </p>
-        <p className={styles.subtitle}>Web Developer &amp; Digital Craftsman</p>
-        <button type="button" className={styles.enter} onClick={onEnter}>
-          Enter the Realm
-        </button>
-      </header>
-
-      {/* ponytail: stand-in until Phase 6 builds the real destination scene */}
-      {entered && (
-        <button type="button" className={styles.back} onClick={onReturn}>
-          ← Return
-        </button>
-      )}
-    </main>
+      </div>
+      <p className={styles.subtitle}>Web Developer &amp; Digital Craftsman</p>
+      <img src={divider} alt="" className={styles.divider} />
+      <a href={href('realm')} className={styles.enter}>
+        Enter the Realm
+      </a>
+      <a href={href('projects')} className={styles.skip}>
+        or go straight to the projects →
+      </a>
+    </header>
   )
 }
