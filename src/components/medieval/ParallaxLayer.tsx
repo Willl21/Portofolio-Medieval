@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useLoader, useThree } from '@react-three/fiber'
-import { CanvasTexture, MathUtils, SRGBColorSpace, Texture, TextureLoader } from 'three'
+import { CanvasTexture, LinearFilter, MathUtils, SRGBColorSpace, Texture, TextureLoader } from 'three'
 import { BASE_Z, FOV, MAX_OFFSET, artworkFor, type LayerDef, type Placeholder } from './layers'
 
 type Props = { layer: LayerDef; order: number }
@@ -13,6 +13,9 @@ export function ParallaxLayer({ layer, order }: Props) {
 function ArtworkLayer({ url, z, order }: { url: string; z: number; order: number }) {
   const texture = useLoader(TextureLoader, url)
   texture.colorSpace = SRGBColorSpace
+  // Layers are shown near 1:1, so mipmaps would only cost ~33% extra GPU memory.
+  texture.generateMipmaps = false
+  texture.minFilter = LinearFilter
   return <LayerPlane texture={texture} z={z} order={order} />
 }
 

@@ -46,13 +46,15 @@ body {
   object-fit: cover;
 }
 
-/* Aged-painting edge darkening. */
+/* Aged-painting edge darkening + paper grain over the whole scene. */
 .vignette {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(60, 35, 15, 0.35) 100%);
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgba(60, 35, 15, 0.35) 100%),
+    url('./assets/medieval/textures/paper.webp') 0 0 / 256px repeat;
 }
 
 #root > main {

@@ -4,7 +4,7 @@ import { ParallaxLayer } from './ParallaxLayer'
 import { MedievalCamera } from './MedievalCamera'
 import { BASE_Z, FOV, LAYERS } from './layers'
 
-type Props = { entered: boolean; interactive: boolean; reduceMotion: boolean }
+type Props = { entered: boolean }
 
 // Default export so App can React.lazy() it and keep three.js out of the first bundle.
 export default function MedievalScene(props: Props) {
@@ -23,7 +23,7 @@ export default function MedievalScene(props: Props) {
           <ParallaxLayer key={layer.id} layer={layer} order={i} />
         ))}
       </Suspense>
-      <MedievalCamera {...props} />
+      <MedievalCamera entered={props.entered} />
     </Canvas>
   )
 }

@@ -1,6 +1,6 @@
 import { LAYERS, artworkFor } from './layers'
 
-/** No-WebGL fallback: same artwork stacked with plain <img>, no motion. */
+/** Mobile / reduced-motion / no-WebGL: same artwork stacked with plain <img>, no motion. */
 export function StaticScene() {
   return (
     <div className="scene" aria-hidden>

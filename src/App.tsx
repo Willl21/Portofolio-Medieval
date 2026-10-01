@@ -16,18 +16,20 @@ const hasWebGL = (() => {
 // ponytail: read once at load; make reactive if switching OS settings live ever matters.
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
 const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches
+// Parallax only where it pays off: desktop mouse, motion allowed. Everyone else gets the static stack.
+const animated = hasWebGL && finePointer && !reduceMotion
 
 export default function App() {
   const [entered, setEntered] = useState(false)
 
   return (
     <>
-      {hasWebGL ? (
+      {/* Always underneath: shows instantly, and the canvas's opaque sky covers it once textures load. */}
+      <StaticScene />
+      {animated && (
         <Suspense fallback={null}>
-          <MedievalScene entered={entered} interactive={finePointer && !reduceMotion} reduceMotion={reduceMotion} />
+          <MedievalScene entered={entered} />
         </Suspense>
-      ) : (
-        <StaticScene />
       )}
       <div className="vignette" aria-hidden />
       <Home entered={entered} onEnter={() => setEntered(true)} onReturn={() => setEntered(false)} />
