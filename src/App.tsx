@@ -25,9 +25,10 @@ const hasWebGL = (() => {
 
 // ponytail: read once at load; make reactive if switching OS settings live ever matters.
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches
-const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches
-// The living 2.5D painting where it pays off: desktop mouse, motion allowed. Everyone else gets the static painting.
-const animated = hasWebGL && finePointer && !reduceMotion
+// The living 2.5D painting everywhere WebGL works (phones included; they may run slower).
+// Reduced motion and no-WebGL get the static painting.
+// ponytail: no per-device quality tiers yet; add lighter textures for phones if they lag too much.
+const animated = hasWebGL && !reduceMotion
 
 const PAGES: Record<PlaceId, (props: { detail?: string }) => React.ReactNode> = {
   about: About,

@@ -35,10 +35,16 @@ export function MedievalCamera({ route }: { route: Route }) {
     const leave = () => {
       pointer.current.x = pointer.current.y = 0
     }
+    // on touch screens a finger drags the view; when it lifts, the painting drifts back to rest
+    const lift = (e: PointerEvent) => e.pointerType !== 'mouse' && leave()
     window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', lift)
+    window.addEventListener('pointercancel', lift)
     document.documentElement.addEventListener('mouseleave', leave)
     return () => {
       window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', lift)
+      window.removeEventListener('pointercancel', lift)
       document.documentElement.removeEventListener('mouseleave', leave)
     }
   }, [])
