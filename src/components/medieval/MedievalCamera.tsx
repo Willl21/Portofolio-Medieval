@@ -7,7 +7,8 @@ import type { Route } from '../../router'
 const TRAVEL_TIME = 0.85 // smooth-damp time constant: eases in AND out, so journeys feel filmed, not snapped
 const DRIFT_RATE = 1.8 // pointer follow, exponential: unhurried, like a viewer stepping along a gallery wall
 const PREVIEW_LEAN = 0.06 // how far hovering a destination leans the overview toward it
-const TOUCH_REACH = 0.35 // a finger drag moves the view at most this fraction of the mouse's reach
+const TOUCH_GAIN = 4 // a drag across a quarter of the screen moves the view its full reach
+const TOUCH_RATE = 5 // and it follows a finger more briskly than a mouse
 // Dev-only: `?snap` jumps straight to each pose, for checking framing in throttled/headless tabs.
 const SNAP = import.meta.env.DEV && location.search.includes('snap')
 
@@ -27,11 +28,11 @@ export function MedievalCamera({ route }: { route: Route }) {
   const pose = useRef<Pose>([...HOME_POSE])
   const vel = useMemo(() => [{ v: 0 }, { v: 0 }, { v: 0 }], [])
   const drift = useRef({ x: 0, y: 0 })
+  const touching = useRef(false)
 
   useEffect(() => {
     // Touch: only a drag on the painting itself moves the view, by how far the finger travelled
-    // (not where it landed), and only a third as far as a mouse can. Scrolling a folio or tapping
-    // the nav never nudges the camera.
+    // (not where it landed). Scrolling a folio or tapping the nav never nudges the camera.
     const drag = { active: false, x: 0, y: 0 }
     const down = (e: PointerEvent) => {
       if (e.pointerType === 'mouse') return
@@ -46,10 +47,11 @@ export function MedievalCamera({ route }: { route: Route }) {
         return
       }
       if (!drag.active) return
+      touching.current = true
       const span = Math.min(window.innerWidth, window.innerHeight)
-      const clamp = (v: number) => Math.max(-TOUCH_REACH, Math.min(TOUCH_REACH, v))
-      pointer.current.x = clamp(((drag.x - e.clientX) / span) * TOUCH_REACH * 2)
-      pointer.current.y = clamp(((e.clientY - drag.y) / span) * TOUCH_REACH * 2)
+      const clamp = (v: number) => Math.max(-1, Math.min(1, v))
+      pointer.current.x = clamp(((drag.x - e.clientX) / span) * TOUCH_GAIN)
+      pointer.current.y = clamp(((e.clientY - drag.y) / span) * TOUCH_GAIN)
     }
     const leave = () => {
       pointer.current.x = pointer.current.y = 0
@@ -58,6 +60,7 @@ export function MedievalCamera({ route }: { route: Route }) {
     const lift = (e: PointerEvent) => {
       if (e.pointerType === 'mouse') return
       drag.active = false
+      touching.current = false
       leave()
     }
     window.addEventListener('pointerdown', down)
@@ -91,7 +94,7 @@ export function MedievalCamera({ route }: { route: Route }) {
 
     // The painting "breathes" with the mouse; calmer while reading a folio.
     const reach = route.view === 'place' ? 0.35 : 1
-    const k = 1 - Math.exp(-DRIFT_RATE * dt)
+    const k = 1 - Math.exp(-(touching.current ? TOUCH_RATE : DRIFT_RATE) * dt)
     drift.current.x += (pointer.current.x * MAX_OFFSET.x * reach - drift.current.x) * k
     drift.current.y += (pointer.current.y * MAX_OFFSET.y * reach - drift.current.y) * k
 
