@@ -311,12 +311,13 @@
   margin-top: 1.2rem;
 }
 
+/* quill and inkpot stand beside the Send button, clear of the text */
 .quill {
   position: absolute;
-  top: -78px;
-  right: -8px;
-  width: 92px;
-  opacity: 0.9;
+  right: 0;
+  bottom: -6px;
+  width: 64px;
+  opacity: 0.95;
   pointer-events: none;
 }
 
@@ -409,8 +410,7 @@
   letter-spacing: 0.08em;
 }
 
-.elsewhere a,
-.text a {
+.elsewhere a {
   color: var(--rubric);
 }
 

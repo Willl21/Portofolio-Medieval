@@ -62,18 +62,26 @@
 /* the painted banderole */
 .scroll {
   width: min(96vw, 760px);
-  aspect-ratio: 1600 / 360;
+  /* the painted scroll is stretched a little taller than its art so two lines and the W's swash fit */
+  aspect-ratio: 1600 / 440;
   display: grid;
   place-items: center;
   background: url('../assets/medieval/ornaments/banderole/banderole.webp') center / 100% 100% no-repeat;
   filter: drop-shadow(0 8px 14px rgba(20, 28, 50, 0.35));
 }
 
+/* the small line sits clear of the swash on the decorative W */
 .title {
   margin: 0;
   display: grid;
-  line-height: 0.9;
-  transform: translateY(-2%);
+  gap: 0.1em;
+  line-height: 1;
+}
+
+@media (max-width: 760px) {
+  .scroll {
+    aspect-ratio: 1600 / 560;
+  }
 }
 
 .titleSmall {
@@ -88,7 +96,7 @@
 .titleName {
   font-family: 'Cinzel Decorative', 'Cinzel', serif;
   font-weight: 700;
-  font-size: clamp(2.3rem, 6.4vw, 4.2rem);
+  font-size: clamp(2rem, 6vw, 4rem);
   letter-spacing: 0.04em;
   color: #5c1f24;
 }

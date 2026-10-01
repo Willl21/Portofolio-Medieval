@@ -125,8 +125,15 @@ body {
   .realm-hint .narrow {
     display: inline;
   }
-  .realm-hint[data-place] {
+  /* phones: with the signpost at the foot of the painting the hint goes to the empty sky up top;
+     the static painting has no signpost, so there it sits just above the tab bar */
+  .realm-hint[data-place='top'] {
+    top: 22px;
+    bottom: auto;
+  }
+  .realm-hint[data-place='bottom'] {
     top: auto;
+    bottom: calc(92px + env(safe-area-inset-bottom));
   }
   .page-frame {
     border-width: 8px;

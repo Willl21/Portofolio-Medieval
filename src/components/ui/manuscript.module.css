@@ -39,6 +39,14 @@
   text-wrap: pretty;
 }
 
+/* links in running text are written in the rubricator's red, not browser blue */
+.text a,
+.lede a {
+  color: var(--rubric);
+  text-decoration-color: rgba(166, 61, 39, 0.45);
+  text-underline-offset: 3px;
+}
+
 /* Illuminated initial: a gold letter on an azure ground inside a vermilion frame. */
 .lede::first-letter {
   float: left;

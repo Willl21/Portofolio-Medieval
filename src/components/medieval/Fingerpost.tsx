@@ -17,12 +17,21 @@ const FOOT = { x: 1700, y: 1306 }
 const POST_W = 60 // frame px
 const ARM_W = 284 // frame px
 // Top to bottom; each arm points the way you would walk to get there.
-const ARMS: { id: PlaceId; dir: 1 | -1; y: number }[] = [
+type ArmSpec = { id: PlaceId; dir: 1 | -1; y: number }
+const ARMS: ArmSpec[] = [
   { id: 'contact', dir: 1, y: 1004 },
   { id: 'about', dir: -1, y: 1066 },
   { id: 'experience', dir: 1, y: 1128 },
   { id: 'projects', dir: -1, y: 1190 },
   { id: 'skills', dir: -1, y: 1252 },
+]
+// Portrait: little room under the castle, so the arms pair up left/right in three rows.
+const ARMS_NARROW: ArmSpec[] = [
+  { id: 'contact', dir: 1, y: 1120 },
+  { id: 'about', dir: -1, y: 1120 },
+  { id: 'experience', dir: 1, y: 1190 },
+  { id: 'projects', dir: -1, y: 1190 },
+  { id: 'skills', dir: -1, y: 1260 },
 ]
 
 const loadImage = (src: string) =>
@@ -84,8 +93,14 @@ export function Fingerpost({ visible }: { visible: boolean }) {
   const [postTex] = useTextures([postArt])
   const aspect = useAspect()
   const z = layerZ('ground') + 0.1
-  const s = frameScale(z, aspect)
-  const [fx, fy] = frameToWorld(FOOT.x, FOOT.y, z, aspect)
+  // Portrait screens only see the middle of the painting: stand the post just right of the road,
+  // a little larger so the lettering stays legible.
+  const narrow = aspect < 1
+  const k = narrow ? 1.15 : 1
+  const s = frameScale(z, aspect) * k
+  const footX = narrow ? 1330 : FOOT.x
+  const [fx, fy] = frameToWorld(footX, FOOT.y, z, aspect)
+  const armY = (y: number) => fy + (FOOT.y - y) * s // world y of an arm, scaled about the foot
   const postW = POST_W * s
   const postH = (postW * POST.h) / POST.w
   const group = useRef<Group>(null)
@@ -98,8 +113,10 @@ export function Fingerpost({ visible }: { visible: boolean }) {
   const halfH = TAN * (OVERVIEW_POSE[2] - z)
   const screenBottom = OVERVIEW_POSE[1] + MAX_OFFSET.y * 1.1 + 0.03 - halfH
   const armH = (ARM_W * s * ARM.h) / ARM.w
-  const lowest = frameToWorld(FOOT.x, ARMS.at(-1)!.y, z, aspect)[1] - armH / 2
-  const lift = Math.max(0, screenBottom + halfH * 0.05 - lowest)
+  const arms = narrow ? ARMS_NARROW : ARMS
+  const lowest = armY(arms.at(-1)!.y) - armH / 2
+  // on phones the tab bar covers the foot of the screen as well
+  const lift = Math.max(0, screenBottom + halfH * (narrow ? 0.26 : 0.05) - lowest)
 
   useFrame((_, delta) => {
     const m = postMat.current
@@ -114,9 +131,8 @@ export function Fingerpost({ visible }: { visible: boolean }) {
         <planeGeometry args={[postW, postH]} />
         <meshBasicMaterial ref={postMat} map={postTex} transparent opacity={0} depthWrite={false} toneMapped={false} />
       </mesh>
-      {ARMS.map((arm, i) => {
-        const [, ay] = frameToWorld(FOOT.x, arm.y, z, aspect)
-        return <Arm key={arm.id} {...arm} img={img} pivot={[fx, ay, z + 0.01]} width={ARM_W * s} visible={visible} order={order + 0.01 * (ARMS.length - i)} postMat={postMat} />
+      {arms.map((arm, i) => {
+        return <Arm key={arm.id} {...arm} img={img} pivot={[fx, armY(arm.y), z + 0.01]} width={ARM_W * s} visible={visible} order={order + 0.01 * (arms.length - i)} postMat={postMat} />
       })}
     </group>
   )

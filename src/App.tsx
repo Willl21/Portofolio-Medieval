@@ -70,7 +70,7 @@ export default function App() {
       {route.view === 'realm' && (
         <p className="realm-hint" data-place={animated ? 'top' : 'bottom'} role="status">
           <span className="wide">{animated ? 'Follow a signpost, or choose from the banner above.' : 'Choose a destination from the banner above.'}</span>
-          <span className="narrow">Choose a destination below.</span>
+          <span className="narrow">{animated ? 'Follow a signpost, or choose below.' : 'Choose a destination below.'}</span>
         </p>
       )}
 
